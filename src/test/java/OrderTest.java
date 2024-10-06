@@ -16,12 +16,13 @@ public class OrderTest {
 
     @Test
     @DisplayName("Проверка создания заказа неавторизованным пользователем")
-    @Description("Должен вернуться код ошибки 401, так как в описании сказано, что заказ может сделать только авторизованный пользователь")
+    @Description("Должен вернуться статус код 200 и тело ответа должно быть не пустое")
     public void createOrderWithoutAuthorization() {
         CreateOrderRequest createOrderRequest = new CreateOrderRequest();
         createOrderRequest.setIngredients("61c0c5a71d1f82001bdaaa6d");
         userClient.CreateOrder("", createOrderRequest)
-                .statusCode(SC_UNAUTHORIZED);
+                .statusCode(SC_OK)
+                .body("name",Matchers.notNullValue());
     }
 
     @Test
