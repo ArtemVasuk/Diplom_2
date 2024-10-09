@@ -8,6 +8,9 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
 import userprovider.UserProvider;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import static org.apache.http.HttpStatus.*;
 
 public class OrderTest {
@@ -19,7 +22,11 @@ public class OrderTest {
     @Description("Должен вернуться статус код 200 и тело ответа должно быть не пустое")
     public void createOrderWithoutAuthorization() {
         CreateOrderRequest createOrderRequest = new CreateOrderRequest();
-        createOrderRequest.setIngredients("61c0c5a71d1f82001bdaaa6d");
+        ValidatableResponse getHashIngredientsRequest = userClient.getHashIngredients("");
+        ArrayList ListIngredients = getHashIngredientsRequest.extract().path("data");
+        HashMap HashMapIngredients = (HashMap) ListIngredients.get(0);
+        String HashIngredients = (String) HashMapIngredients.get("_id");
+        createOrderRequest.setIngredients(HashIngredients);
         userClient.CreateOrder("", createOrderRequest)
                 .statusCode(SC_OK)
                 .body("name",Matchers.notNullValue());
@@ -30,9 +37,13 @@ public class OrderTest {
     @Description("Должен вернуться статус код 200 и в теле информация о заказе")
     public void createOrderAuthorization() {
         CreateUserRequest createUserRequest = UserProvider.getRandomCreateUserRequest();
+        ValidatableResponse getHashIngredientsRequest = userClient.getHashIngredients("");
+        ArrayList ListIngredients = getHashIngredientsRequest.extract().path("data");
+        HashMap HashMapIngredients = (HashMap) ListIngredients.get(0);
+        String HashIngredients = (String) HashMapIngredients.get("_id");
         CreateOrderRequest createOrderRequest;
         createOrderRequest = new CreateOrderRequest();
-        createOrderRequest.setIngredients("61c0c5a71d1f82001bdaaa6d");
+        createOrderRequest.setIngredients(HashIngredients);
         ValidatableResponse response = userClient.createUser(createUserRequest);
         accessToken = response.extract().path("accessToken");
         userClient.CreateOrder(accessToken, createOrderRequest)

@@ -15,6 +15,7 @@ public class UserClient extends BaseClient{
     public static final String LOGIN_URL = "/api/auth/login";
     public static final String USER_DATA_URL = "/api/auth/user";
     public static final String ORDER_URL = "/api/orders";
+    public static final String INGREDIENTS_URL = "/api/ingredients";
 
     @Step("Создание пользователя")
     public ValidatableResponse createUser(CreateUserRequest createUserRequest){
@@ -75,6 +76,16 @@ public class UserClient extends BaseClient{
                 .spec(getSpec())
                 .when()
                 .get(ORDER_URL)
+                .then();
+    }
+
+    @Step("Получение списка хэшей ингредиентов")
+    public ValidatableResponse getHashIngredients(String accessToken){
+        return given()
+                .header("authorization", accessToken)
+                .spec(getSpec())
+                .when()
+                .get(INGREDIENTS_URL)
                 .then();
     }
 
